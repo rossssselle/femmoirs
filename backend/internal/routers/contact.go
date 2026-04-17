@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"femmoirs-backend/internal/services"
+
+	"github.com/rs/zerolog/log"
 )
 
 type ContactRouter struct {
@@ -37,6 +39,7 @@ func (cr *ContactRouter) SubmitModerationContact(w http.ResponseWriter, r *http.
 		Message:      request.Message,
 	})
 	if err != nil {
+		log.Error().Err(err).Str("contact_email", request.ContactEmail).Msg("failed to send moderation contact")
 		switch {
 		case errors.Is(err, services.ErrModerationContactEmailRequired),
 			errors.Is(err, services.ErrModerationContactEmailInvalid),
