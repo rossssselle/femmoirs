@@ -27,7 +27,7 @@ Recommended stack:
 - app hosting: Railway
 - database: Railway Postgres
 - domain DNS: Squarespace
-- moderation email: personal Gmail with app password to start
+- moderation email: Resend API with your verified subdomain
 
 This is the simplest setup for the current architecture because the app expects a real backend, database, admin secret, and SMTP credentials.
 
@@ -55,29 +55,30 @@ Required variables:
 
 - `DATABASE_URL`
 - `ADMIN_SECRET`
+- `RESEND_API_KEY`
+- `MODERATION_FROM_EMAIL`
+- `MODERATION_TO_EMAIL`
 - `SMTP_HOST`
 - `SMTP_PORT`
 - `SMTP_USERNAME`
 - `SMTP_PASSWORD`
-- `MODERATION_FROM_EMAIL`
-- `MODERATION_TO_EMAIL`
 
 Notes:
 
 - `PORT` is provided by Railway automatically.
 - Railway Postgres usually exposes a `DATABASE_URL` you can reference directly in the web service.
 - `ADMIN_SECRET` should be long and random.
+- If `RESEND_API_KEY` is set, the app will use the Resend HTTP API for moderation mail and ignore SMTP for that flow.
 
-### 4. Recommended Gmail SMTP values
+### 4. Recommended Resend values
 
-If you want the cheapest working moderation email setup right now, use your personal Gmail with a Google app password:
+Recommended production mail setup:
 
-- `SMTP_HOST=smtp.gmail.com`
-- `SMTP_PORT=587`
-- `SMTP_USERNAME=yourname@gmail.com`
-- `SMTP_PASSWORD=your-16-digit-app-password`
-- `MODERATION_FROM_EMAIL=yourname@gmail.com`
+- `RESEND_API_KEY=re_...`
+- `MODERATION_FROM_EMAIL=help@mail.femmoirs.com`
 - `MODERATION_TO_EMAIL=yourname@gmail.com`
+
+You can keep SMTP values around for local fallback, but the moderation form will use Resend directly whenever `RESEND_API_KEY` is present.
 
 ### 5. Initialize the production database
 
