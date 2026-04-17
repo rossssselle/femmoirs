@@ -1,0 +1,27 @@
+# === Go build artifacts ===
+bin/
+*.exe
+*.out
+*.test
+
+# === Go workspace ===
+vendor/
+*.log
+
+# === Editor / IDE ===
+.vscode/
+.idea/
+.DS_Store
+
+# === Environment files ===
+.env
+.env.local
+
+# === Docker ===
+# Don't commit local DB data volumes or container metadata
+docker-compose.override.yml
+pgdata/
+*.pid
+
+# === System ===
+Thumbs.db
