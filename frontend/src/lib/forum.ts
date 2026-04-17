@@ -117,7 +117,8 @@ async function apiFetch<T>(path: string, init?: RequestInit) {
 }
 
 export async function fetchPosts() {
-  return apiFetch<PostInfo[]>("/posts?limit=50");
+  const posts = await apiFetch<PostInfo[] | null>("/posts?limit=50");
+  return Array.isArray(posts) ? posts : [];
 }
 
 export async function fetchPost(postId: number) {
@@ -136,11 +137,12 @@ export async function submitModerationContact(input: {
 }
 
 export async function fetchAdminPosts(adminSecret: string) {
-  return apiFetch<PostInfo[]>("/admin/posts?limit=100", {
+  const posts = await apiFetch<PostInfo[] | null>("/admin/posts?limit=100", {
     headers: {
       "X-Admin-Secret": adminSecret
     }
   });
+  return Array.isArray(posts) ? posts : [];
 }
 
 export async function updateAdminPostStatus(postId: number, status: string, adminSecret: string) {

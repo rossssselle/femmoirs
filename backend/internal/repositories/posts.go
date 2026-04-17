@@ -98,7 +98,7 @@ func (prp *PostgresPostRepository) GetAllPosts(ctx context.Context, limit int, a
 
 	defer rows.Close()
 
-	var posts []models.Post
+	posts := make([]models.Post, 0)
 	for rows.Next() {
 		var p models.Post
 		if err := rows.Scan(&p.ID, &p.PseudoUserID, &p.Title, &p.Body, &p.CreatedAt, &p.Status); err != nil {

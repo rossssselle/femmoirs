@@ -54,7 +54,7 @@ func (ps *PostService) ListPosts(ctx context.Context, limit int) ([]*models.Post
 		return nil, err
 	}
 
-	var postsWithInfo []*models.PostInfo
+	postsWithInfo := make([]*models.PostInfo, 0, len(posts))
 	for _, post := range posts {
 		postVotes, err := ps.pvrp.GetPostVotesByPostID(ctx, post.ID)
 		if err != nil {

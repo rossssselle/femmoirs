@@ -34,7 +34,7 @@ func (as *AdminService) ListPosts(ctx context.Context, limit int) ([]*models.Pos
 		return nil, err
 	}
 
-	var postsWithInfo []*models.PostInfo
+	postsWithInfo := make([]*models.PostInfo, 0, len(posts))
 	for _, post := range posts {
 		postVotes, err := as.pvrp.GetPostVotesByPostID(ctx, post.ID)
 		if err != nil {
