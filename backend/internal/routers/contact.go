@@ -43,6 +43,9 @@ func (cr *ContactRouter) SubmitModerationContact(w http.ResponseWriter, r *http.
 			errors.Is(err, services.ErrModerationContactMessageEmpty):
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
+		case errors.Is(err, services.ErrModerationContactTimedOut):
+			http.Error(w, err.Error(), http.StatusGatewayTimeout)
+			return
 		case errors.Is(err, services.ErrModerationContactNotConfigured):
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

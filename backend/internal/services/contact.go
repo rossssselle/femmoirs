@@ -2,13 +2,16 @@ package services
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
+	"net"
 	"net/mail"
 	"net/smtp"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -16,6 +19,7 @@ var (
 	ErrModerationContactEmailRequired = errors.New("contact email is required")
 	ErrModerationContactEmailInvalid  = errors.New("contact email is invalid")
 	ErrModerationContactMessageEmpty  = errors.New("message cannot be empty")
+	ErrModerationContactTimedOut      = errors.New("moderation email timed out")
 )
 
 type ModerationContactInput struct {
@@ -31,6 +35,7 @@ type ContactService struct {
 	smtpPass  string
 	fromEmail string
 	toEmail   string
+	timeout   time.Duration
 }
 
 func NewContactServiceFromEnv() *ContactService {
@@ -41,10 +46,11 @@ func NewContactServiceFromEnv() *ContactService {
 		smtpPass:  os.Getenv("SMTP_PASSWORD"),
 		fromEmail: strings.TrimSpace(os.Getenv("MODERATION_FROM_EMAIL")),
 		toEmail:   strings.TrimSpace(os.Getenv("MODERATION_TO_EMAIL")),
+		timeout:   15 * time.Second,
 	}
 }
 
-func (cs *ContactService) SendModerationContact(_ context.Context, input ModerationContactInput) error {
+func (cs *ContactService) SendModerationContact(ctx context.Context, input ModerationContactInput) error {
 	if !cs.isConfigured() {
 		return ErrModerationContactNotConfigured
 	}
@@ -87,7 +93,11 @@ func (cs *ContactService) SendModerationContact(_ context.Context, input Moderat
 		message,
 	}, "\r\n")
 
-	return smtp.SendMail(addr, auth, cs.fromEmail, []string{cs.toEmail}, []byte(body))
+	if err := cs.sendMail(ctx, addr, auth, contactEmail, []byte(body)); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cs *ContactService) isConfigured() bool {
@@ -106,4 +116,81 @@ func parseSMTPPort(value string) int {
 	}
 
 	return port
+}
+
+func (cs *ContactService) sendMail(ctx context.Context, addr string, auth smtp.Auth, contactEmail string, body []byte) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
+	timeoutCtx, cancel := context.WithTimeout(ctx, cs.timeout)
+	defer cancel()
+
+	dialer := &net.Dialer{
+		Timeout: cs.timeout,
+	}
+
+	conn, err := dialer.DialContext(timeoutCtx, "tcp", addr)
+	if err != nil {
+		if timeoutCtx.Err() != nil {
+			return ErrModerationContactTimedOut
+		}
+		return err
+	}
+	defer conn.Close()
+
+	if err := conn.SetDeadline(time.Now().Add(cs.timeout)); err != nil {
+		return err
+	}
+
+	client, err := smtp.NewClient(conn, cs.smtpHost)
+	if err != nil {
+		if timeoutCtx.Err() != nil {
+			return ErrModerationContactTimedOut
+		}
+		return err
+	}
+	defer client.Close()
+
+	if ok, _ := client.Extension("STARTTLS"); ok {
+		if err := client.StartTLS(&tls.Config{ServerName: cs.smtpHost, MinVersion: tls.VersionTLS12}); err != nil {
+			return err
+		}
+	}
+
+	if auth != nil {
+		if ok, _ := client.Extension("AUTH"); ok {
+			if err := client.Auth(auth); err != nil {
+				return err
+			}
+		}
+	}
+
+	if err := client.Mail(cs.fromEmail); err != nil {
+		return err
+	}
+
+	if err := client.Rcpt(cs.toEmail); err != nil {
+		return err
+	}
+
+	writer, err := client.Data()
+	if err != nil {
+		return err
+	}
+
+	if _, err := writer.Write(body); err != nil {
+		_ = writer.Close()
+		return err
+	}
+
+	if err := writer.Close(); err != nil {
+		return err
+	}
+
+	if err := client.Quit(); err != nil {
+		return err
+	}
+
+	return nil
 }
