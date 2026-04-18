@@ -72,6 +72,7 @@ export default function App() {
   const [sort, setSort] = useState<FeedSort>("latest");
   const [searchQuery, setSearchQuery] = useState("");
   const [composer, setComposer] = useState<ComposerState>({ title: "", body: "" });
+  const [hasMissionAcknowledgement, setHasMissionAcknowledgement] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,7 +90,11 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       setComposerError(null);
-      setViewMode(getViewModeFromPath(window.location.pathname));
+      const nextViewMode = getViewModeFromPath(window.location.pathname);
+      if (nextViewMode !== "compose") {
+        setHasMissionAcknowledgement(false);
+      }
+      setViewMode(nextViewMode);
     };
 
     window.addEventListener("popstate", handlePopState);
@@ -211,6 +216,7 @@ export default function App() {
     const nextPath = getPathForViewMode(nextViewMode);
     if (nextViewMode !== "compose") {
       setComposerError(null);
+      setHasMissionAcknowledgement(false);
     }
     if (nextViewMode !== "contact") {
       setContactPrefill(null);
@@ -266,6 +272,11 @@ export default function App() {
       return;
     }
 
+    if (!hasMissionAcknowledgement) {
+      setComposerError("Please confirm your post aligns with the femmoirs mission before submitting.");
+      return;
+    }
+
     try {
       setComposerError(null);
       setNotice(null);
@@ -287,6 +298,7 @@ export default function App() {
       }
 
       setComposer({ title: "", body: "" });
+      setHasMissionAcknowledgement(false);
       navigateTo("home");
     } catch (submitError) {
       setComposerError(submitError instanceof Error ? submitError.message : "Unable to share right now.");
@@ -377,6 +389,7 @@ export default function App() {
       <ComposeView
         composer={composer}
         error={composerError}
+        hasMissionAcknowledgement={hasMissionAcknowledgement}
         notice={notice}
         isSubmitting={isSubmitting}
         pseudoUserId={pseudoUserId}
@@ -389,6 +402,12 @@ export default function App() {
             setComposerError(null);
           }
           setComposer(nextComposer);
+        }}
+        onMissionAcknowledgementChange={(nextValue) => {
+          if (composerError) {
+            setComposerError(null);
+          }
+          setHasMissionAcknowledgement(nextValue);
         }}
         onSubmit={handleSubmit}
       />

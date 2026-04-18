@@ -7,9 +7,11 @@ type ComposeViewProps = {
   composer: ComposerState;
   error: string | null;
   notice: string | null;
+  hasMissionAcknowledgement: boolean;
   isSubmitting: boolean;
   pseudoUserId: string;
   onBack: () => void;
+  onMissionAcknowledgementChange: (next: boolean) => void;
   onComposerChange: (next: ComposerState) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 };
@@ -18,12 +20,17 @@ export function ComposeView({
   composer,
   error,
   notice,
+  hasMissionAcknowledgement,
   isSubmitting,
   pseudoUserId,
   onBack,
+  onMissionAcknowledgementChange,
   onComposerChange,
   onSubmit
 }: ComposeViewProps) {
+  const isSubmitDisabled =
+    isSubmitting || !hasMissionAcknowledgement || !composer.body.trim();
+
   return (
     <section className="compose-page">
       <div className="compose-page-header">
@@ -74,9 +81,22 @@ export function ComposeView({
           }
         />
 
+        <label className="acknowledgement-field" htmlFor="story-acknowledgement">
+          <input
+            id="story-acknowledgement"
+            checked={hasMissionAcknowledgement}
+            type="checkbox"
+            onChange={(event) => onMissionAcknowledgementChange(event.target.checked)}
+          />
+          <span>
+            I confirm this post fits the Femmoirs mission and does not include bigotry, harassment,
+            or dehumanizing language.
+          </span>
+        </label>
+
         <div className="composer-footer">
           <div className="compose-page-actions">
-            <button className="mini-button lavender-button" disabled={isSubmitting} type="submit">
+            <button className="mini-button lavender-button" disabled={isSubmitDisabled} type="submit">
               {isSubmitting ? "submitting..." : "submit"}
             </button>
             <button className="mini-button" onClick={onBack} type="button">

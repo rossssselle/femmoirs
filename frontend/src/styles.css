@@ -334,6 +334,27 @@ h3,
   gap: 10px;
 }
 
+.acknowledgement-field {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 2px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-transform: none;
+}
+
+.acknowledgement-field input {
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+  accent-color: var(--green-bar);
+  flex: 0 0 auto;
+}
+
 .subject-input {
   background: rgba(255, 249, 198, 0.9);
 }
@@ -558,7 +579,7 @@ h3,
   margin: 0;
   font-size: 0.97rem;
   line-height: 1.55;
-  text-transform: lowercase;
+  text-transform: none;
   white-space: pre-wrap;
 }
 
