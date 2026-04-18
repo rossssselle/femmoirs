@@ -38,13 +38,17 @@ export function ContactView({ prefill }: ContactViewProps) {
       await submitModerationContact({
         contact_email: contactEmail.trim(),
         subject: subject.trim(),
-        message: message.trim()
+        message: message.trim(),
       });
       setNotice("your moderation message was sent.");
       setSubject("");
       setMessage("");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "unable to send your message.");
+      setError(
+        submitError instanceof Error
+          ? submitError.message
+          : "unable to send your message.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -53,16 +57,19 @@ export function ContactView({ prefill }: ContactViewProps) {
   return (
     <section className="static-page">
       <div className="static-page-header">
-        <p className="kicker">contact</p>
         <h1>reach the people behind it*</h1>
         <p className="compose-page-copy">
-          if something needs moderation attention, you can send it here and it will go straight to
-          the moderation inbox email configured on the backend.
+          if something needs moderation attention, you can send it here and it
+          will go straight to the moderation inbox email configured on the
+          backend.
         </p>
       </div>
 
       <div className="contact-layout">
-        <form className="window-panel mint-panel contact-form-panel" onSubmit={handleSubmit}>
+        <form
+          className="window-panel mint-panel contact-form-panel"
+          onSubmit={handleSubmit}
+        >
           <div className="panel-head">
             <label className="mini-label" htmlFor="contact-email">
               your email
@@ -105,10 +112,16 @@ export function ContactView({ prefill }: ContactViewProps) {
           />
 
           <div className="composer-footer">
-            <button className="mini-button lavender-button" disabled={isSubmitting} type="submit">
+            <button
+              className="mini-button lavender-button"
+              disabled={isSubmitting}
+              type="submit"
+            >
               {isSubmitting ? "sending..." : "send to moderation"}
             </button>
-            <span className="meta-note">only use this form for moderation or safety issues</span>
+            <span className="meta-note">
+              only use this form for moderation or safety issues
+            </span>
           </div>
 
           {error ? (

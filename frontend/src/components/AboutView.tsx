@@ -6,7 +6,6 @@ export function AboutView({ onOpenCompose }: AboutViewProps) {
   return (
     <section className="static-page">
       <div className="static-page-header">
-        <p className="kicker">about</p>
         <h1>why femmoirs exists*</h1>
         <p className="compose-page-copy">
           femmoirs is a small anonymous space for women and femme-identifying

@@ -63,18 +63,18 @@ export function HomeView({
     <section className="home-layout">
       <div className="home-main-column">
         <section className="rules-panel">
-          {/* <p className="kicker">
-            anonymous forum for women and femme-identifying people
-          </p> */}
           <h1>rules of femmoirs*</h1>
           <ol className="rules-list">
             <li>
-              if you are a womxn*, bipoc, or femme-identifying, please feel free
-              to share any or all of your experiences about relationships, work,
-              and life.
+              This is a space for womxn*, BIPOC, and femme-identifying people to
+              share openly about life, work, and relationships.
             </li>
-            <li>be you, be authentic, be uncensored, be unapologetic.</li>
-            <li>this is a safe space for you. you are not alone.</li>
+            <li>Be authentic, uncensored, and unapologetic.</li>
+            <li>
+              Help protect this space: affirm posts you support, question posts
+              that don’t align, and report anything that violates the rules.
+            </li>
+            <li>You are not alone here.</li>
           </ol>
 
           <div className="identity-strip">
@@ -85,9 +85,6 @@ export function HomeView({
             >
               i&apos;m ready
             </button>
-            <span className="identity-note">
-              local voice: {voiceTag(pseudoUserId)}
-            </span>
           </div>
         </section>
 
@@ -254,8 +251,8 @@ export function HomeView({
         <div className="window-panel yellow-panel identity-card">
           <p className="mini-label">this device</p>
           <p className="static-copy">
-            local voice: {voiceTag(pseudoUserId)}. the device id stays tied to
-            this browser, not to any single post.
+            local voice: {voiceTag(pseudoUserId)}. <br />
+            the device id stays tied to this browser, not to any single post.
           </p>
           <p className="card-note">device id: {pseudoUserId.slice(0, 4)}</p>
 

@@ -26,7 +26,7 @@ export function ComposeView({
   onBack,
   onMissionAcknowledgementChange,
   onComposerChange,
-  onSubmit
+  onSubmit,
 }: ComposeViewProps) {
   const isSubmitDisabled =
     isSubmitting || !hasMissionAcknowledgement || !composer.body.trim();
@@ -34,15 +34,17 @@ export function ComposeView({
   return (
     <section className="compose-page">
       <div className="compose-page-header">
-        <p className="kicker">say it how it happened</p>
         <h1>create a post*</h1>
         <p className="compose-page-copy">
-          this page is just for writing. your post stays anonymous and is attached only to the
-          local voice on this device.
+          this page is just for writing. your post stays anonymous and is
+          attached only to the local voice on this device.
         </p>
       </div>
 
-      <form className="composer-panel composer-panel-page window-panel mint-panel" onSubmit={onSubmit}>
+      <form
+        className="composer-panel composer-panel-page window-panel mint-panel"
+        onSubmit={onSubmit}
+      >
         <div className="panel-head">
           <label className="mini-label" htmlFor="story-title">
             subject:
@@ -59,7 +61,7 @@ export function ComposeView({
           onChange={(event) =>
             onComposerChange({
               ...composer,
-              title: event.target.value
+              title: event.target.value,
             })
           }
         />
@@ -76,34 +78,45 @@ export function ComposeView({
           onChange={(event) =>
             onComposerChange({
               ...composer,
-              body: event.target.value
+              body: event.target.value,
             })
           }
         />
 
-        <label className="acknowledgement-field" htmlFor="story-acknowledgement">
+        <label
+          className="acknowledgement-field"
+          htmlFor="story-acknowledgement"
+        >
           <input
             id="story-acknowledgement"
             checked={hasMissionAcknowledgement}
             type="checkbox"
-            onChange={(event) => onMissionAcknowledgementChange(event.target.checked)}
+            onChange={(event) =>
+              onMissionAcknowledgementChange(event.target.checked)
+            }
           />
           <span>
-            I confirm this post fits the Femmoirs mission and does not include bigotry, harassment,
-            or dehumanizing language.
+            I confirm this post fits the Femmoirs mission and does not include
+            bigotry, harassment, or dehumanizing language.
           </span>
         </label>
 
         <div className="composer-footer">
           <div className="compose-page-actions">
-            <button className="mini-button lavender-button" disabled={isSubmitDisabled} type="submit">
+            <button
+              className="mini-button lavender-button"
+              disabled={isSubmitDisabled}
+              type="submit"
+            >
               {isSubmitting ? "submitting..." : "submit"}
             </button>
             <button className="mini-button" onClick={onBack} type="button">
               not ready yet
             </button>
           </div>
-          <span className="meta-note">local voice: {voiceTag(pseudoUserId)}</span>
+          <span className="meta-note">
+            local voice: {voiceTag(pseudoUserId)}
+          </span>
         </div>
 
         {error ? (
